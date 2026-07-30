@@ -55,7 +55,7 @@
             <p id="group-error" class="error" hidden>請選擇組別</p>
           </div>
           <label class="check-row">
-            <input id="identity-confirm" type="checkbox" />
+            <input id="identity-confirm" type="checkbox" aria-describedby="confirm-error" />
             <span>我已確認暱稱與組別正確</span>
           </label>
           <p id="confirm-error" class="error" hidden>請先確認資料正確</p>
@@ -66,7 +66,8 @@
       <section id="exam-view" hidden>
         <div class="exam-toolbar card">
           <div><span id="student-label"></span><small id="progress-label">第 1 題／共 8 題</small></div>
-          <div id="timer" class="timer" role="timer">剩餘時間 20:00</div>
+          <div id="timer" class="timer">剩餘時間 20:00</div>
+          <span id="timer-alert" class="sr-only" aria-live="polite"></span>
         </div>
         <div class="exam-layout">
           <article id="question-card" class="card question-card" tabindex="-1"></article>
@@ -86,6 +87,7 @@
           <div class="score-ring"><strong id="total-score">0</strong><span>／100</span></div>
           <p id="defense-summary" class="defense-summary"></p>
           <p id="overall-feedback"></p>
+          <button id="retry-submit" class="secondary" type="button" hidden>再次送出成績</button>
         </div>
         <div class="result-grid">
           <section class="card">

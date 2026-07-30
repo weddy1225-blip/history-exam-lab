@@ -11,11 +11,12 @@ function doPost(e) {
       if (cache.get('submission:'+data.submissionId)) throw new Error('此答案已經提交');
       const result = grade_(data.answers);
       const sheet = getSheet_();
+      if (sheet.getLastRow()>1 && sheet.getRange(2,12,sheet.getLastRow()-1,1).createTextFinder(data.submissionId).matchEntireCell(true).findNext()) throw new Error('此答案已經提交');
       sheet.appendRow([
         new Date(), data.examId, safe_(data.name), safe_(data.group),
         result.total, result.historyScore, result.defenseLevel,
         result.poisonCount, Number(data.durationSeconds),
-        JSON.stringify(data.answers), JSON.stringify(result.scores)
+        JSON.stringify(data.answers), JSON.stringify(result.scores), data.submissionId
       ]);
       cache.put('submission:'+data.submissionId,'1',21600);
       return json_({ ok: true, result: result, leaderboard: leaderboard_(sheet) });
@@ -32,7 +33,7 @@ function getSheet_() {
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(['提交時間','測驗代碼','暱稱','組別','總分','歷史分數','防禦結果','污染題數','作答秒數','答案JSON','逐題評分JSON']);
+    sheet.appendRow(['提交時間','測驗代碼','暱稱','組別','總分','歷史分數','防禦結果','污染題數','作答秒數','答案JSON','逐題評分JSON','提交識別碼']);
     sheet.setFrozenRows(1);
   }
   return sheet;

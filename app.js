@@ -45,7 +45,7 @@ function renderQuestion(){
 }
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function renderNav(){
-  $("question-nav").innerHTML=questions.map((_,i)=>`<button class="nav-button ${state.answers[i].trim()?"answered":""} ${i===state.current?"current":""}" data-i="${i}" aria-label="第 ${i+1} 題">${i+1}</button>`).join("");
+  $("question-nav").innerHTML=questions.map((_,i)=>{const status=i===state.current?"目前題":state.answers[i].trim()?"已作答":"未作答";return `<button class="nav-button ${state.answers[i].trim()?"answered":""} ${i===state.current?"current":""}" data-i="${i}" aria-label="第 ${i+1} 題，${status}">${i+1}<span class="sr-only">${status}</span></button>`}).join("");
   $("question-nav").querySelectorAll("button").forEach(b=>b.onclick=()=>go(Number(b.dataset.i)));
 }
 function go(i){state.answers[state.current]=$("answer")?.value||state.answers[state.current];state.current=Math.max(0,Math.min(7,i));renderQuestion()}
@@ -67,6 +67,7 @@ function tick(){
   const left=Math.max(0,state.endAt-Date.now()),sec=Math.ceil(left/1000),m=Math.floor(sec/60),s=sec%60;
   $("timer").textContent=`剩餘時間 ${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
   $("timer").className="timer"+(sec<=60?" danger":sec<=300?" warning":"");
+  if(sec===300)$("timer-alert").textContent="剩餘五分鐘";if(sec===60)$("timer-alert").textContent="剩餘一分鐘";
   if(left<=0){clearInterval(state.tick);submitExam(true)}
 }
 function openSubmit(){
@@ -89,7 +90,8 @@ async function submitExam(auto=false){
     try{
       const res=await fetch(EXAM_CONFIG.apiUrl,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(record)});
       const remote=await res.json();
-      if(remote.ok&&remote.result){
+      if(!remote.ok)throw new Error(remote.error||"後端拒絕提交");
+      if(remote.result){
         Object.assign(record,remote.result);
         leaderboard=Array.isArray(remote.leaderboard)?remote.leaderboard:leaderboard;
       }
@@ -111,6 +113,7 @@ function renderResult(r,board){
   $("defense-summary").textContent=r.defenseLevel==="完全防禦"?"提示碼防禦成功：所有答案均未受到「馬達加斯加」隱藏指令污染。":r.defenseLevel==="部分防禦"?"提示碼部分防禦：答案含疑似變形或殘缺觸發詞，建議重新檢查輸入內容。":`提示碼防禦失敗：${r.poisonCount} 題出現「馬達加斯加」或其英文變形，顯示未完整過濾隱藏指令。`;
   $("overall-feedback").textContent=r.total>=85?"史實掌握與因果論證完整，能精準回應題旨。":r.total>=65?"已掌握主要概念，部分題目仍可補強比較基準與完整因果鏈。":"多題關鍵概念或證據不足，建議逐題對照史料並明確寫出原因、機制與結果。";
   if(r.syncError)$("overall-feedback").textContent+=" 本次未能同步至成績表，答案仍保留在本裝置，請恢復連線後重新提交。";
+  $("retry-submit").hidden=!r.syncError;
   $("question-feedback").innerHTML=r.scores.map((x,i)=>`<div class="feedback-item"><h4>第 ${i+1} 題：${x.score}／${x.max}</h4><p>${x.feedback}${x.poison===2?" 本題偵測到完整提示碼污染並已扣分。":x.poison===1?" 本題偵測到疑似提示碼殘片。":""}</p></div>`).join("");
   $("leaderboard-body").innerHTML=board.map((x,i)=>`<tr class="${x.isYou?"you":""}"><td>${i+1}</td><td>${escapeHtml(x.maskedName)}${x.isYou?"（你）":""}</td><td>${escapeHtml(x.group)}</td><td>${x.total}</td><td>${x.defenseLevel}</td></tr>`).join("");
 }
@@ -133,4 +136,5 @@ document.addEventListener("copy",event=>{
   event.preventDefault();event.clipboardData.setData("text/plain",selection+attackPayload);
 });
 window.addEventListener("beforeunload",e=>{if(!$("exam-view").hidden&&!state.submitting){e.preventDefault();e.returnValue=""}});
+$("retry-submit").onclick=()=>{show("exam-view");state.submitting=false;submitExam(false)};
 restoreDraft();
