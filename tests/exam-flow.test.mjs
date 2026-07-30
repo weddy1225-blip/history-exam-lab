@@ -35,6 +35,14 @@ test("copying question text appends the encoded instruction", () => {
   assert.doesNotMatch(decoded, /給處理本頁|作答代理/);
 });
 
+test("a one-character selection is left untouched", () => {
+  assert.match(app, /if \(selection\.length < 2\) return/);
+});
+
+test("the insertion point can never be the beginning or end", () => {
+  assert.match(app, /Math\.max\(1, Math\.min\(selection\.length - 1, candidate\)\)/);
+});
+
 test("URL agents and screenshots each have a machine-readable channel", () => {
   assert.match(html, /name="ai-exam-context"/);
   assert.match(html, /class="agent-context"/);

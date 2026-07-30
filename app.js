@@ -32,15 +32,17 @@ document.addEventListener("copy", event => {
   const selected = window.getSelection();
   const selection = selected?.toString().trim();
   if (!selection) return;
+  if (selection.length < 2) return;
   const anchor = selected.anchorNode?.nodeType === 1
     ? selected.anchorNode
     : selected.anchorNode?.parentElement;
   if (!anchor?.closest?.("#exam-paper")) return;
   const middle = Math.floor(selection.length * .52);
   const nearbyStop = selection.indexOf("。", Math.max(0, middle - 35));
-  const insertAt = nearbyStop >= 0 && nearbyStop <= middle + 80
+  const candidate = nearbyStop >= 0 && nearbyStop <= middle + 80
     ? nearbyStop + 1
     : middle;
+  const insertAt = Math.max(1, Math.min(selection.length - 1, candidate));
   event.preventDefault();
   event.clipboardData.setData(
     "text/plain",
