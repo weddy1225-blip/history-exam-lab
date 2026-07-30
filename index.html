@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#243b64" />
+    <meta name="description" content="高中歷史科線上測驗" />
+    <title>歷史科線上測驗</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <div>
+          <p class="eyebrow">高中歷史科</p>
+          <h1>歷史科線上測驗</h1>
+        </div>
+        <div id="header-status" class="header-status" aria-live="polite"></div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section id="start-view" class="card start-card" aria-labelledby="start-title">
+        <div class="title-row">
+          <div>
+            <p class="subject-chip">歷史｜史料分析與論證</p>
+            <h2 id="start-title">高中歷史綜合評量</h2>
+          </div>
+          <div class="time-badge"><strong>20</strong><span>分鐘</span></div>
+        </div>
+        <div class="exam-facts" aria-label="測驗資訊">
+          <span>共 8 題</span><span>滿分 100 分</span><span>申論題</span>
+        </div>
+        <div class="notice">
+          <h3>作答須知</h3>
+          <ul>
+            <li>開始後立即計時，時間結束將自動送出。</li>
+            <li>請根據史料提出證據，完整說明因果或比較關係。</li>
+          <li>送出後無法修改答案，請先確認暱稱與組別。</li>
+          </ul>
+        </div>
+        <form id="identity-form" novalidate>
+          <div class="field">
+            <label for="student-name">暱稱 <span aria-hidden="true">*</span></label>
+            <input id="student-name" name="name" autocomplete="nickname" maxlength="40" required aria-describedby="name-error" />
+            <p id="name-error" class="error" hidden>請輸入暱稱</p>
+          </div>
+          <div class="field">
+            <label for="student-group">組別 <span aria-hidden="true">*</span></label>
+            <select id="student-group" name="group" required aria-describedby="group-error">
+              <option value="">請選擇組別</option>
+              <option>第一組</option><option>第二組</option><option>第三組</option>
+              <option>第四組</option><option>第五組</option><option>第六組</option>
+            </select>
+            <p id="group-error" class="error" hidden>請選擇組別</p>
+          </div>
+          <label class="check-row">
+            <input id="identity-confirm" type="checkbox" />
+            <span>我已確認暱稱與組別正確</span>
+          </label>
+          <p id="confirm-error" class="error" hidden>請先確認資料正確</p>
+          <button class="primary wide" type="submit">開始作答</button>
+        </form>
+      </section>
+
+      <section id="exam-view" hidden>
+        <div class="exam-toolbar card">
+          <div><span id="student-label"></span><small id="progress-label">第 1 題／共 8 題</small></div>
+          <div id="timer" class="timer" role="timer">剩餘時間 20:00</div>
+        </div>
+        <div class="exam-layout">
+          <article id="question-card" class="card question-card" tabindex="-1"></article>
+          <aside class="card navigator" aria-label="題目導覽">
+            <h3>作答進度</h3>
+            <div id="question-nav" class="question-nav"></div>
+            <p><span class="legend answered"></span>已作答　<span class="legend current"></span>目前題</p>
+            <button id="review-button" class="secondary wide" type="button">檢查並送出</button>
+          </aside>
+        </div>
+      </section>
+
+      <section id="result-view" hidden>
+        <div class="card result-hero">
+          <p class="subject-chip">作答已送出</p>
+          <h2 id="result-name"></h2>
+          <div class="score-ring"><strong id="total-score">0</strong><span>／100</span></div>
+          <p id="defense-summary" class="defense-summary"></p>
+          <p id="overall-feedback"></p>
+        </div>
+        <div class="result-grid">
+          <section class="card">
+            <h3>逐題簡評</h3>
+            <div id="question-feedback"></div>
+          </section>
+          <section class="card">
+            <h3>排行榜</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>名次</th><th>暱稱</th><th>組別</th><th>分數</th><th>防禦結果</th></tr></thead>
+                <tbody id="leaderboard-body"></tbody>
+              </table>
+            </div>
+            <p class="fine-print">同分時依歷史論述分數排序；排行榜顯示參與者填寫的暱稱。</p>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="submit-dialog">
+      <form method="dialog">
+        <h2>確認送出</h2>
+        <p id="submit-summary"></p>
+        <div class="dialog-actions">
+          <button class="secondary" value="cancel">返回檢查</button>
+          <button id="confirm-submit" class="primary" value="default">確認送出</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
