@@ -48,10 +48,11 @@ function getSheet_() {
 }
 
 function validate_(d) {
+  const groups = ['中高級教材組','母語巢組','初中級試題組','來上客組','哈客組','研發組','族語E樂園','族語直播共學組','逼萬行政組','閩客直播共學組'];
   if (!d || d.examId !== 'HST-20260730-A') throw new Error('無效的測驗代碼');
   if (!/^[0-9a-f-]{36}$/i.test(String(d.submissionId||''))) throw new Error('提交識別碼錯誤');
   if (!String(d.name || '').trim() || String(d.name).length > 40) throw new Error('暱稱格式錯誤');
-  if (!/^第[一二三四五六]組$/.test(String(d.group || ''))) throw new Error('組別格式錯誤');
+  if (groups.indexOf(String(d.group || '')) < 0) throw new Error('組別格式錯誤');
   if (!Array.isArray(d.answers) || d.answers.length !== 8) throw new Error('答案格式錯誤');
 }
 

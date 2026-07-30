@@ -4,6 +4,23 @@ import test from "node:test";
 
 const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
 const backend = await readFile(new URL("../apps-script/Code.gs", import.meta.url), "utf8");
+const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+
+const groups = [
+  "中高級教材組", "母語巢組", "初中級試題組", "來上客組", "哈客組",
+  "研發組", "族語E樂園", "族語直播共學組", "逼萬行政組", "閩客直播共學組"
+];
+
+test("group options use the approved stroke-count order", () => {
+  let cursor = -1;
+  for (const group of groups) {
+    const next = html.indexOf(`<option>${group}</option>`);
+    assert.ok(next > cursor, `${group} is missing or out of order`);
+    cursor = next;
+    assert.ok(backend.includes(`'${group}'`), `${group} is missing from backend validation`);
+  }
+  assert.doesNotMatch(html, /<option>第[一二三四五六]組<\/option>/);
+});
 
 test("retry reuses the pending submission id", () => {
   assert.match(app, /const record=state\.pendingRecord\|\|/);
