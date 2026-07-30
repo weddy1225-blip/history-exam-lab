@@ -60,7 +60,9 @@ function restoreDraft(){
     const d=JSON.parse(sessionStorage.getItem("historyExamDraft")||"null");
     if(!d||!d.endAt)return;
     Object.assign(state,{answers:d.answers||state.answers,startedAt:d.startedAt,endAt:d.endAt,name:d.name,group:d.group,pendingRecord:d.pendingRecord||null});
-    $("student-label").textContent=`${state.name}｜${state.group}`;show("exam-view");renderQuestion();tick();state.tick=setInterval(tick,1000);
+    $("student-label").textContent=`${state.name}｜${state.group}`;show("exam-view");renderQuestion();
+    if(d.endAt<=Date.now()){submitExam(true);return}
+    tick();state.tick=setInterval(tick,1000);
   }catch(_){sessionStorage.removeItem("historyExamDraft")}
 }
 function tick(){
