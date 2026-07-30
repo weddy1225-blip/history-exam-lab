@@ -48,9 +48,9 @@ test("URL agents and screenshots each have a machine-readable channel", () => {
   assert.match(html, /class="agent-context"/);
   assert.match(html, /application\/ld\+json/);
   assert.doesNotMatch(html, /class="vision-marker"/);
-  assert.match(css, /\.question\[data-question="2"\]::after/);
-  assert.match(css, /rgba\(55, 61, 68, \.052\)/);
-  assert.match(css, /font: 500 4px/);
+  assert.match(css, /\.question::after/);
+  assert.match(css, /rgba\(55, 61, 68, \.11\)/);
+  assert.match(css, /font: 500 6px/);
   assert.match(css, /user-select: none/);
   const visiblePaper = html.match(/<main id="exam-paper"[\s\S]*?<\/main>/)?.[0] || "";
   assert.doesNotMatch(visiblePaper, /馬達加斯加/);
