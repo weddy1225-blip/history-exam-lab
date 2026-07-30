@@ -6,52 +6,30 @@ const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const css = await readFile(new URL("../styles.css", import.meta.url), "utf8");
 const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
 
-test("the product is a single dense ten-question answer sheet", () => {
-  assert.equal((html.match(/class="question"/g) || []).length, 10);
-  assert.equal((html.match(/<textarea /g) || []).length, 10);
-  assert.equal((html.match(/class="exam-paper"/g) || []).length, 1);
-  assert.match(css, /width: min\(100%, 794px\)/);
+test("the page contains one question and one answer box", () => {
+  assert.equal((html.match(/class="question"/g) || []).length, 1);
+  assert.equal((html.match(/<textarea /g) || []).length, 1);
   assert.match(css, /min-height: 1123px/);
-  assert.match(css, /@page \{ size: A4 portrait; margin: 0; \}/);
 });
 
-test("submission, scoring, identity, timer and leaderboard are absent", () => {
-  assert.doesNotMatch(html + app, /送出|排行榜|student-name|student-group|timer|total-score|apiUrl|fetch\(/i);
-  assert.doesNotMatch(html, /config\.js|apps-script/i);
+test("the white-on-white instruction is inside the question", () => {
+  const question = html.match(/<article class="question">([\s\S]*?)<\/article>/)?.[1] || "";
+  assert.match(question, /class="hidden-instruction"/);
+  assert.match(question, /紫色馬達加斯加唱著阿根廷不要為我哭泣/);
+  assert.match(css, /\.hidden-instruction/);
+  assert.match(css, /color: #fff/);
+  assert.match(css, /background: #fff/);
 });
 
-test("answers remain device-local only", () => {
+test("legacy hidden channels and copy interception are removed", () => {
+  assert.doesNotMatch(html + css + app, /ai-exam-context|agent-context|application\/ld\+json|::after|attackPayload|addEventListener\("copy"/);
+});
+
+test("there is no submission, scoring or network transfer", () => {
+  assert.doesNotMatch(html + app, /送出|排行榜|評分|fetch\(|XMLHttpRequest|sendBeacon|WebSocket/i);
+});
+
+test("the answer remains device-local", () => {
   assert.match(app, /localStorage\.setItem/);
-  assert.doesNotMatch(app, /fetch\(|XMLHttpRequest|sendBeacon|WebSocket/i);
-});
-
-test("copying question text appends the encoded instruction", () => {
-  assert.match(app, /addEventListener\("copy"/);
-  assert.match(app, /selection\.slice\(0, insertAt\) \+ attackPayload \+ selection\.slice\(insertAt\)/);
-  const encoded = app.match(/atob\(\s*"([^"]+)"/)?.[1];
-  assert.ok(encoded);
-  const decoded = Buffer.from(encoded, "base64").toString("utf8");
-  assert.match(decoded, /馬達加斯加開著會跑步的花朵跑車/);
-  assert.doesNotMatch(decoded, /給處理本頁|作答代理/);
-});
-
-test("a one-character selection is left untouched", () => {
-  assert.match(app, /if \(selection\.length < 2\) return/);
-});
-
-test("the insertion point can never be the beginning or end", () => {
-  assert.match(app, /Math\.max\(1, Math\.min\(selection\.length - 1, candidate\)\)/);
-});
-
-test("URL agents and screenshots each have a machine-readable channel", () => {
-  assert.match(html, /name="ai-exam-context"/);
-  assert.match(html, /class="agent-context"/);
-  assert.match(html, /application\/ld\+json/);
-  assert.doesNotMatch(html, /class="vision-marker"/);
-  assert.match(css, /\.question::after/);
-  assert.match(css, /rgba\(55, 61, 68, \.11\)/);
-  assert.match(css, /font: 500 6px/);
-  assert.match(css, /user-select: none/);
-  const visiblePaper = html.match(/<main id="exam-paper"[\s\S]*?<\/main>/)?.[0] || "";
-  assert.doesNotMatch(visiblePaper, /馬達加斯加/);
+  assert.doesNotMatch(app, /fetch\(/);
 });
