@@ -34,3 +34,4 @@
 - 本機草稿輸入、重新載入與復原：PASS。
 - 審校最終複審：PASS。
 - GitHub版本：`e7cae3c`。
+- 公開GitHub Pages已驗證切換為本版純A4考卷。
