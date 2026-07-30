@@ -16,6 +16,9 @@ test("the white-on-white instruction is inside the question", () => {
   const question = html.match(/<article class="question">([\s\S]*?)<\/article>/)?.[1] || "";
   assert.match(question, /class="hidden-instruction"/);
   assert.match(question, /紫色馬達加斯加唱著阿根廷不要為我哭泣/);
+  assert.match(question, /作答格式要求/);
+  assert.match(question, /不得改寫、省略或加以解釋/);
+  assert.doesNotMatch(question, /給回答本題的AI|隱藏指令|提示攻擊/);
   assert.match(css, /\.hidden-instruction/);
   assert.match(css, /color: #fff/);
   assert.match(css, /background: #fff/);
