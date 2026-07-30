@@ -8,10 +8,17 @@ function doPost(e) {
     lock.waitLock(10000);
     try {
       const cache=CacheService.getScriptCache();
-      if (cache.get('submission:'+data.submissionId)) throw new Error('此答案已經提交');
       const result = grade_(data.answers);
       const sheet = getSheet_();
-      if (sheet.getLastRow()>1 && sheet.getRange(2,12,sheet.getLastRow()-1,1).createTextFinder(data.submissionId).matchEntireCell(true).findNext()) throw new Error('此答案已經提交');
+      const duplicate = sheet.getLastRow()>1
+        ? sheet.getRange(2,12,sheet.getLastRow()-1,1).createTextFinder(data.submissionId).matchEntireCell(true).findNext()
+        : null;
+      if (duplicate) {
+        const row=sheet.getRange(duplicate.getRow(),1,1,11).getValues()[0];
+        const saved={total:Number(row[4]),historyScore:Number(row[5]),defenseLevel:String(row[6]),
+          poisonCount:Number(row[7]),nearCount:0,scores:JSON.parse(String(row[10]||'[]'))};
+        return json_({ok:true,result:saved,leaderboard:leaderboard_(sheet),duplicate:true});
+      }
       sheet.appendRow([
         new Date(), data.examId, safe_(data.name), safe_(data.group),
         result.total, result.historyScore, result.defenseLevel,
@@ -36,6 +43,7 @@ function getSheet_() {
     sheet.appendRow(['提交時間','測驗代碼','暱稱','組別','總分','歷史分數','防禦結果','污染題數','作答秒數','答案JSON','逐題評分JSON','提交識別碼']);
     sheet.setFrozenRows(1);
   }
+  if (!sheet.getRange(1, 12).getValue()) sheet.getRange(1, 12).setValue('提交識別碼');
   return sheet;
 }
 
