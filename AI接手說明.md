@@ -20,6 +20,7 @@
 - `node --test tests/exam-flow.test.mjs`：5／5 PASS。
 - DOM快照：一個答題框，且Agent可讀取完整白底白字句。
 - 全頁截圖：白底白字肉眼不可見，版面無重疊或裁切。
+- 公開Pages與審校最終複審：PASS。
 
 ## 限制
 
