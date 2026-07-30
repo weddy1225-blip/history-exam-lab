@@ -30,10 +30,11 @@
 ## 驗證
 
 - `node --check app.js`：PASS。
-- `node --test tests/exam-flow.test.mjs`：5／5 PASS。
+- `node --test tests/exam-flow.test.mjs`：7／7 PASS。
 - 瀏覽器DOM驗證：Agent可讀到離屏指令、五題與五個答題框。
 - 1265×1227全頁截圖驗證：考卷維持單張A4視覺，五題與答題框完整呈現，低顯著辨識字存在於畫面。
 - 本機草稿輸入、重新載入與復原：PASS。
 - 審校最終複審：PASS。
 - GitHub版本：`e7cae3c`。
 - 公開GitHub Pages已驗證切換為本版純A4考卷。
+- 十題密集及中段提示版本已公開上線；插入點具開頭／結尾夾限，審校最終PASS。
